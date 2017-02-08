@@ -5,7 +5,7 @@ import ChatBar from './ChatBar.jsx';
 
 
 let data = {
-  currentUser: {name: "Bob"}, // optional. if currentUser is not defined, it means the user is Anonymous
+  currentUser: {name: ""}, // optional. if currentUser is not defined, it means the user is Anonymous
   messages: []
 };
 
@@ -15,6 +15,8 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = data;
+
+    this.setNewName = this.setNewName.bind(this);
 
   };
 
@@ -34,10 +36,24 @@ class App extends Component {
 
   }
 
+  setNewName = (event) => {
+    if (event.key === "Enter") {
+      console.log(event.target.value);
+      console.log('Set new name');
+
+      this.setState({currentUser: {name: event.target.value}});
+      
+    } else {
+
+      console.log('nope');
+
+    }
+  }
+
 
   handlePressEnter = e => {
     if (e.key === "Enter") {
-      const newMessage = {username: 'Bob', content: e.target.value};
+      const newMessage = {username: this.state.currentUser.name, content: e.target.value};
       this.socket.send(JSON.stringify(newMessage));
       console.log('sent to socket!');
 
@@ -53,7 +69,7 @@ class App extends Component {
         <div>
           <h1>Chatty</h1>
           <MessageList messages={this.state.messages} />
-          <ChatBar currentUser={this.state.currentUser} handlePressEnter={this.handlePressEnter} />
+          <ChatBar currentUser={this.state.currentUser} handlePressEnter={this.handlePressEnter} setNewName={this.setNewName} />
         </div>
       );
     }
