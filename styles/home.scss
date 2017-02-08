@@ -2,7 +2,7 @@ h1 {
   color: black;
   background-color: tomato;
   padding: 8px 0px 8px 8px;
-  margin: -8px 0px -8px -8px;
+  margin: -8px -8px -8px -8px;
   border-bottom: black;
   border-style: solid;
   border-width: thin;
@@ -23,6 +23,7 @@ h1 {
 
     nav h1 {
       margin: 0;
+      margin-right: -8px
       }
 
     body #data-reactroot {

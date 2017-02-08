@@ -6,18 +6,7 @@ import ChatBar from './ChatBar.jsx';
 
 let data = {
   currentUser: {name: "Bob"}, // optional. if currentUser is not defined, it means the user is Anonymous
-  messages: [
-    {
-      id: 1,
-      username: "Bob",
-      content: "Has anyone seen my marbles?"
-    },
-    {
-      id: 2,
-      username: "Anonymous",
-      content: "No, I think you lost them. You lost your marbles Bob. You lost them for good."
-    }
-  ]
+  messages: []
 };
 
 
@@ -26,30 +15,36 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = data;
+
   };
 
-
-  handlePressEnter = e => {
-    if (e.key === "Enter") {
-      const newMessage = {id: this.state.messages.length + 1, username: 'Bob', content: e.target.value};
-      const messages = this.state.messages.concat(newMessage);
-      this.setState({messages: messages})
-    } else {
-      console.log('nope');
-    }
+  onMessage = (event) => {
+    let msg = JSON.parse(event.data);
+    let messages = [...this.state.messages, msg];
+    this.setState({messages})
   }
 
   componentDidMount() {
     console.log("componentDidMount <App />");
-    setTimeout(() => {
-      console.log("Simulating incoming message");
-      // Add a new message to the list of messages in the data store
-      const newMessage = {id: 3, username: "Michelle", content: "Hello there!"};
-      const messages = this.state.messages.concat(newMessage)
-      // Update the state of the app component.
-      // Calling setState will trigger a call to render() in App and all child components.
-      this.setState({messages: messages})
-    }, 3000);
+    this.socket = new WebSocket("ws://www.localhost:4001");
+    this.socket.onmessage = this.onMessage;
+
+    // let mySocket = new WebSocket("ws://www.localhost:4000");
+    // console.log('Connected to server ...');
+
+  }
+
+
+  handlePressEnter = e => {
+    if (e.key === "Enter") {
+      const newMessage = {username: 'Bob', content: e.target.value};
+      this.socket.send(JSON.stringify(newMessage));
+      console.log('sent to socket!');
+
+
+    } else {
+      console.log('nope');
+    }
   }
 
   render() {
