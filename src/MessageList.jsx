@@ -11,7 +11,8 @@ class MessageList extends Component {
             {results.map(function(result) {
               return (
                 <li key={result.id}>
-                  <div className="message-username">{result.username}</div><div className="message-content" style={result.styles}>{result.content}</div>
+                  <div className="message-username" style={result.fontColor}>{result.username}</div><div className="message-content" 
+                    style={result.styles}>{result.content}</div>
                 </li>
 
                 )
