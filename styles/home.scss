@@ -9,18 +9,22 @@ h1 {
 
 }
 
-// html
     body {
       max-height: 100%;
       max-width: 100%;
       font-family: 'Open Sans', sans-serif;
-
     }
+
     .wrapper {
-      font-size: 14px; }
+      font-size: 14px;
+    }
 
     nav {
-      height: 40px; padding: 8px; border-bottom: 1px solid black; background-color: tomato; }
+      height: 40px;
+      padding: 8px;
+      border-bottom: 1px solid black;
+      background-color: tomato;
+    }
 
     nav h1 {
       margin: 0;
@@ -58,7 +62,8 @@ h1 {
     #message-list .message .content {
       padding-left: 25px;
       margin-left: -120px;
-      flex: 85; }
+      flex: 85;
+    }
 
     .message.system {
       font-weight: 400;

@@ -5,7 +5,7 @@ import ChatBar from './ChatBar.jsx';
 
 
 let data = {
-  currentUser: {name: ""}, // optional. if currentUser is not defined, it means the user is Anonymous
+  currentUser: {name: ""},
   messages: [],
   connected: []
 };
@@ -21,13 +21,14 @@ class App extends Component {
 
   };
 
+// funnel the incoming messages into different pathes depending on the type
+
   onMessage = (event) => {
     let msg = JSON.parse(event.data);
 
     if (msg.type === 'incomingMessage') {
-
-    let messages = [...this.state.messages, msg];
-    this.setState({messages})
+      let messages = [...this.state.messages, msg];
+      this.setState({messages})
 
     } else if (msg.type === 'incomingNotification') {
       msg.styles = {'fontStyle': 'italic', 'color': '#808080', 'fontSize': '90%'};
@@ -35,23 +36,20 @@ class App extends Component {
       this.setState({messages});
 
     } else if (msg.type === 'howMany') {
-      console.log(msg.usersRN);
       let connected = [this.state.connected, msg.usersRN];
       this.setState({connected});
-      console.log(this.state);
     }
   }
-
 
   componentDidMount() {
     this.socket = new WebSocket("ws://www.localhost:4001");
     this.socket.onmessage = this.onMessage;
   }
 
+  // event listeners triggered by the enter key on the input fields
+
   setNewName = (event) => {
     if (event.key === "Enter") {
-      console.log(event.target.value);
-      console.log('Set new name');
 
       // setting user name to Anonymous if currentUser.name is non existent
 
@@ -63,15 +61,8 @@ class App extends Component {
         type: 'postNotification',
         content: `${this.state.currentUser.name} has changed their name to ${event.target.value}`}
 
-
       this.socket.send(JSON.stringify(newNotification));
-
       this.setState({currentUser: {name: event.target.value}});
-
-    } else {
-
-      console.log('nope');
-
     }
   }
 
@@ -80,10 +71,6 @@ class App extends Component {
     if (e.key === "Enter") {
       const newMessage = {type: 'postMessage', username: this.state.currentUser.name, content: e.target.value};
       this.socket.send(JSON.stringify(newMessage));
-
-
-    } else {
-      console.log('nope');
     }
   }
 
