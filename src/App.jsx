@@ -3,41 +3,64 @@ import MessageList from './MessageList.jsx';
 
 import ChatBar from './ChatBar.jsx';
 
-
-let data = {
-  currentUser: {name: ""},
-  messages: [],
-  connected: []
-};
-
-
 class App extends Component {
 
   constructor(props) {
     super(props);
-    this.state = data;
+
+    this.state = {
+      currentUser: {name: ""},
+      messages: [],
+      connected: []
+    };
 
     this.setNewName = this.setNewName.bind(this);
 
   };
 
-// funnel the incoming messages into different pathes depending on the type
+  setNewName = (name) => {
+
+    const newNotification = {
+      type: 'postNotification',
+      content: `${this.state.currentUser.name === "" ? "Anonymous" : this.state.currentUser.name } has changed their name to ${name === "" ? "Anonymous" : name }`}
+
+    this.socket.send(JSON.stringify(newNotification));
+    this.setState({currentUser: {name: name}});
+  }
+
+  submitMessage = (msg) => {
+    const newMessage = {type: 'postMessage', username: this.state.currentUser.name, content: msg};
+    this.socket.send(JSON.stringify(newMessage));
+  }
+
+  addMessage = (msg) => {
+    this.setState({messages: [...this.state.messages, msg]});
+  }
+
+  addNotification = (msg) => {
+    // msg.styles = {'fontStyle': 'italic', 'color': '#808080', 'fontSize': '90%'};
+    // msg.className = 'name-change';
+    let messages = [...this.state.messages, msg];
+    this.setState({messages});
+  }
+
+  updateUserCount = (count) => {
+    this.setState({connected: count});
+  }
 
   onMessage = (event) => {
     let msg = JSON.parse(event.data);
 
-    if (msg.type === 'incomingMessage') {
-      let messages = [...this.state.messages, msg];
-      this.setState({messages})
-
-    } else if (msg.type === 'incomingNotification') {
-      msg.styles = {'fontStyle': 'italic', 'color': '#808080', 'fontSize': '90%'};
-      let messages = [...this.state.messages, msg];
-      this.setState({messages});
-
-    } else if (msg.type === 'howMany') {
-      let connected = [this.state.connected, msg.usersRN];
-      this.setState({connected});
+    switch(msg.type) {
+      case 'incomingMessage':
+        this.addMessage(msg);
+        break;
+      case 'incomingNotification':
+        this.addNotification(msg);
+        break;
+      case 'howMany':
+        this.updateUserCount(msg.usersRN);
+        break;
     }
   }
 
@@ -46,41 +69,13 @@ class App extends Component {
     this.socket.onmessage = this.onMessage;
   }
 
-  // event listeners triggered by the enter key on the input fields
-
-  setNewName = (event) => {
-    if (event.key === "Enter") {
-
-      // setting user name to Anonymous if currentUser.name is non existent
-
-      if (this.state.currentUser.name === '') {
-        this.state.currentUser.name = 'Anonymous';
-      }
-
-      const newNotification = {
-        type: 'postNotification',
-        content: `${this.state.currentUser.name} has changed their name to ${event.target.value}`}
-
-      this.socket.send(JSON.stringify(newNotification));
-      this.setState({currentUser: {name: event.target.value}});
-    }
-  }
-
-
-  handlePressEnter = e => {
-    if (e.key === "Enter") {
-      const newMessage = {type: 'postMessage', username: this.state.currentUser.name, content: e.target.value};
-      this.socket.send(JSON.stringify(newMessage));
-    }
-  }
-
   render() {
-
       return (
         <div>
-          <h1>Chatty</h1><span id='users-connected'>{this.state.connected[1]} users online</span>
+          <h1>Chatty</h1>
+          <span id='users-connected'>{this.state.connected} users online</span>
           <MessageList messages={this.state.messages} />
-          <ChatBar currentUser={this.state.currentUser} handlePressEnter={this.handlePressEnter} setNewName={this.setNewName} />
+          <ChatBar currentUser={this.state.currentUser} submitMessage={this.submitMessage} setNewName={this.setNewName} />
         </div>
       );
     }

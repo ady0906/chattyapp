@@ -42,8 +42,10 @@ h1 {
       padding: 16px 8px;
     }
 
-    #message-list .message {
-      padding: 4px 0;  display: flex;}
+    .messages .message {
+      padding: 4px 0;
+      list-style: none;
+    }
 
     // #message-list .message .username,
 
@@ -59,7 +61,7 @@ h1 {
       overflow: hidden;
       font-weight: bold;}
 
-    #message-list .message .content {
+    .messages .message .content {
       padding-left: 25px;
       margin-left: -120px;
       flex: 85;
@@ -123,4 +125,10 @@ h1 {
       position: absolute;
       right: 14px;
       top: 20px;
+    }
+
+    .incomingNotification {
+      font-style: italic;
+      color: #808080;
+      font-size: 90%;
     }
